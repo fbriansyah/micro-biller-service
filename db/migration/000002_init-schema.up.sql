@@ -6,6 +6,6 @@ CREATE TABLE "billing" (
     "total_amount" bigint DEFAULT 1000,
     "createdAt" timestamptz DEFAULT 'now()',
     "pay_timestampt" timestamptz,
-    "refference_number" string,
+    "refference_number" varchar,
     "isPayed" bool
 );
