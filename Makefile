@@ -6,6 +6,9 @@ postgres:
 createdb:
 	docker exec -it pg-local createdb --username=root --owner=root db_biller
 
+dropdb:
+	docker exec -it pg-local dropdb db_biller
+
 migrateup:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
