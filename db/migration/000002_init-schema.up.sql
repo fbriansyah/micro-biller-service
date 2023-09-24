@@ -1,4 +1,4 @@
-CREATE TABLE "billing" (
+CREATE TABLE "billings" (
     "id" uuid PRIMARY KEY,
     "bill_number" varchar UNIQUE NOT NULL,
     "name" varchar NOT NULL,

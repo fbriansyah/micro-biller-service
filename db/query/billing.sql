@@ -1,15 +1,15 @@
---name: CreateBilling :one
+-- name: CreateBilling :one
 INSERT INTO billings 
     (name, bill_number, base_amount, fine_amount, total_amount, createdAt)
 VALUES (
     $1,$2,$3,$4,$5,now()
 ) RETURNING *;
 
---name: GetBillingByNumber
+-- name: GetBillingByNumber :one
 SELECT * FROM billings
 WHERE bill_number = $1 LIMIT 1;
 
---name: PayBill :one
+-- name: PayBill :one
 UPDATE billings
 SET
     isPayed = true,
@@ -20,7 +20,7 @@ WHERE
 AND total_amount = $3
 RETURNING *;
 
---name: CheckBill :one
+-- name: CheckBill :one
 SELECT * FROM billings
 WHERE 
     bill_number = $1 
