@@ -11,6 +11,7 @@ type Bill struct {
 }
 
 type Transaction struct {
-	Billing   Bill
-	CreatedAt time.Time
+	Billing          Bill
+	RefferenceNumber string
+	CreatedAt        time.Time
 }
