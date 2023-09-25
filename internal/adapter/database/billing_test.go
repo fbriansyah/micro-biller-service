@@ -74,5 +74,31 @@ func TestPayBill(t *testing.T) {
 	require.Equal(t, reffnum, bill2.RefferenceNumber)
 
 	require.NotZero(t, bill2.PayTimestampt)
+}
 
+func TestCheckBill(t *testing.T) {
+	bill1 := CreateRandomBilling(t)
+
+	reffnum := uuid.New().String()
+
+	arg := PayBillParams{
+		RefferenceNumber: reffnum,
+		BillNumber:       bill1.BillNumber,
+		TotalAmount:      bill1.TotalAmount,
+	}
+
+	_, err := testQueries.PayBill(context.Background(), arg)
+	require.NoError(t, err)
+
+	bill2, err := testQueries.CheckBill(context.Background(), CheckBillParams{
+		RefferenceNumber: arg.RefferenceNumber,
+		BillNumber:       arg.BillNumber,
+		TotalAmount:      arg.TotalAmount,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, true, bill2.IsPayed)
+	require.Equal(t, reffnum, bill2.RefferenceNumber)
+
+	require.NotZero(t, bill2.PayTimestampt)
 }
