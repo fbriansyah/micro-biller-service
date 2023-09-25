@@ -7,7 +7,7 @@ type Bill struct {
 	Name        string
 	BaseAmount  int64
 	FineAmount  int64
-	Totalamount int64
+	TotalAmount int64
 }
 
 type Transaction struct {

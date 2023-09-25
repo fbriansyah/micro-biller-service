@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var testAdapter MemoryDatabase
+var testAdapter *MemoryDatabase
 
 func TestMain(m *testing.M) {
 	testAdapter = NewMemoryDatabase()

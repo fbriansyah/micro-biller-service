@@ -13,12 +13,12 @@ type MemoryDatabase struct {
 }
 
 // NewMemoryDatabase instantiate data in memory using singleton pattern
-func NewMemoryDatabase() MemoryDatabase {
+func NewMemoryDatabase() *MemoryDatabase {
 	once.Do(func() {
 		dt := make(map[string]db.Billing)
 
 		data = &dt
 	})
 
-	return MemoryDatabase{}
+	return &MemoryDatabase{}
 }
