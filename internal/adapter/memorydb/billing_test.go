@@ -1,6 +1,7 @@
 package memorydb
 
 import (
+	"context"
 	"testing"
 
 	db "github.com/fbriansyah/micro-biller-service/internal/adapter/database"
@@ -18,7 +19,7 @@ func CreateRandomBilling(t *testing.T) db.Billing {
 	}
 	arg.TotalAmount = arg.BaseAmount + arg.FineAmount
 
-	bill, err := testAdapter.CreateBilling(arg)
+	bill, err := testAdapter.CreateBilling(context.TODO(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, bill)
 
@@ -43,7 +44,7 @@ func TestCreateRandomBilling(t *testing.T) {
 func TestGetBillingByNumber(t *testing.T) {
 	bill1 := CreateRandomBilling(t)
 
-	bill2, err := testAdapter.GetBillingByNumber(bill1.BillNumber)
+	bill2, err := testAdapter.GetBillingByNumber(context.TODO(), bill1.BillNumber)
 	require.NoError(t, err)
 	require.NotEmpty(t, bill2)
 
@@ -67,7 +68,7 @@ func TestPayBill(t *testing.T) {
 		TotalAmount:      bill1.TotalAmount,
 	}
 
-	bill2, err := testAdapter.PayBill(arg)
+	bill2, err := testAdapter.PayBill(context.TODO(), arg)
 	require.NoError(t, err)
 
 	require.Equal(t, true, bill2.IsPayed)
@@ -87,10 +88,10 @@ func TestCheckBill(t *testing.T) {
 		TotalAmount:      bill1.TotalAmount,
 	}
 
-	_, err := testAdapter.PayBill(arg)
+	_, err := testAdapter.PayBill(context.TODO(), arg)
 	require.NoError(t, err)
 
-	bill2, err := testAdapter.CheckBill(db.CheckBillParams{
+	bill2, err := testAdapter.CheckBill(context.TODO(), db.CheckBillParams{
 		RefferenceNumber: arg.RefferenceNumber,
 		BillNumber:       arg.BillNumber,
 		TotalAmount:      arg.TotalAmount,

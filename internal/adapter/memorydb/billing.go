@@ -1,6 +1,7 @@
 package memorydb
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
@@ -9,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (md *MemoryDatabase) CheckBill(arg db.CheckBillParams) (db.Billing, error) {
+func (md *MemoryDatabase) CheckBill(ctx context.Context, arg db.CheckBillParams) (db.Billing, error) {
 
 	bill, ok := (*data)[arg.BillNumber]
 
@@ -24,7 +25,7 @@ func (md *MemoryDatabase) CheckBill(arg db.CheckBillParams) (db.Billing, error) 
 	return bill, nil
 }
 
-func (md *MemoryDatabase) CreateBilling(arg db.CreateBillingParams) (db.Billing, error) {
+func (md *MemoryDatabase) CreateBilling(ctx context.Context, arg db.CreateBillingParams) (db.Billing, error) {
 	if _, ok := (*data)[arg.BillNumber]; ok {
 		return db.Billing{}, errors.New("duplicate bill number")
 	}
@@ -47,7 +48,7 @@ func (md *MemoryDatabase) CreateBilling(arg db.CreateBillingParams) (db.Billing,
 	return bill, nil
 }
 
-func (md *MemoryDatabase) GetBillingByNumber(billNumber string) (db.Billing, error) {
+func (md *MemoryDatabase) GetBillingByNumber(ctx context.Context, billNumber string) (db.Billing, error) {
 	if bill, ok := (*data)[billNumber]; ok {
 		return bill, nil
 	}
@@ -55,7 +56,7 @@ func (md *MemoryDatabase) GetBillingByNumber(billNumber string) (db.Billing, err
 	return db.Billing{}, errors.New("bill not found")
 }
 
-func (md *MemoryDatabase) PayBill(arg db.PayBillParams) (db.Billing, error) {
+func (md *MemoryDatabase) PayBill(ctx context.Context, arg db.PayBillParams) (db.Billing, error) {
 	bill, ok := (*data)[arg.BillNumber]
 	if !ok {
 		return db.Billing{}, errors.New("bill not found")
