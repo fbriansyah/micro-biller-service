@@ -18,8 +18,8 @@ type Billing struct {
 	BaseAmount       int64        `json:"base_amount"`
 	FineAmount       int64        `json:"fine_amount"`
 	TotalAmount      int64        `json:"total_amount"`
-	CreatedAt        time.Time    `json:"createdAt"`
+	CreatedAt        time.Time    `json:"created_at"`
 	PayTimestampt    sql.NullTime `json:"pay_timestampt"`
 	RefferenceNumber string       `json:"refference_number"`
-	IsPayed          sql.NullBool `json:"isPayed"`
+	IsPayed          bool         `json:"is_payed"`
 }

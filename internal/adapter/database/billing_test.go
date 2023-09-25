@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/fbriansyah/micro-biller-service/util"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +27,7 @@ func CreateRandomBilling(t *testing.T) Billing {
 	require.Equal(t, arg.BaseAmount, bill.BaseAmount)
 	require.Equal(t, arg.FineAmount, bill.FineAmount)
 	require.Equal(t, arg.TotalAmount, bill.TotalAmount)
-	require.Equal(t, false, bill.IsPayed.Bool)
+	require.Equal(t, false, bill.IsPayed)
 	require.Equal(t, "", bill.RefferenceNumber)
 
 	require.Empty(t, bill.PayTimestampt)
@@ -51,6 +52,27 @@ func TestGetBillingByNumber(t *testing.T) {
 	require.Equal(t, bill1.BaseAmount, bill2.BaseAmount)
 	require.Equal(t, bill1.FineAmount, bill2.FineAmount)
 	require.Equal(t, bill1.TotalAmount, bill2.TotalAmount)
-	require.Equal(t, bill1.IsPayed.Bool, bill2.IsPayed.Bool)
+	require.Equal(t, bill1.IsPayed, bill2.IsPayed)
 	require.Equal(t, bill1.RefferenceNumber, bill2.RefferenceNumber)
+}
+
+func TestPayBill(t *testing.T) {
+	bill1 := CreateRandomBilling(t)
+
+	reffnum := uuid.New().String()
+
+	arg := PayBillParams{
+		RefferenceNumber: reffnum,
+		BillNumber:       bill1.BillNumber,
+		TotalAmount:      bill1.TotalAmount,
+	}
+
+	bill2, err := testQueries.PayBill(context.Background(), arg)
+	require.NoError(t, err)
+
+	require.Equal(t, true, bill2.IsPayed)
+	require.Equal(t, reffnum, bill2.RefferenceNumber)
+
+	require.NotZero(t, bill2.PayTimestampt)
+
 }

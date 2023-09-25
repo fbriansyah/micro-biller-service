@@ -12,7 +12,7 @@ WHERE bill_number = $1 LIMIT 1;
 -- name: PayBill :one
 UPDATE billings
 SET
-    isPayed = true,
+    is_payed = true,
     pay_timestampt = now(),
     refference_number = $1
 WHERE

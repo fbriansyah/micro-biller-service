@@ -10,7 +10,7 @@ import (
 )
 
 const checkBill = `-- name: CheckBill :one
-SELECT id, bill_number, name, base_amount, fine_amount, total_amount, "createdAt", pay_timestampt, refference_number, "isPayed" FROM billings
+SELECT id, bill_number, name, base_amount, fine_amount, total_amount, created_at, pay_timestampt, refference_number, is_payed FROM billings
 WHERE 
     bill_number = $1 
 AND refference_number = $2
@@ -47,7 +47,7 @@ INSERT INTO billings
     (name, bill_number, base_amount, fine_amount, total_amount)
 VALUES (
     $1,$2,$3,$4,$5
-) RETURNING id, bill_number, name, base_amount, fine_amount, total_amount, "createdAt", pay_timestampt, refference_number, "isPayed"
+) RETURNING id, bill_number, name, base_amount, fine_amount, total_amount, created_at, pay_timestampt, refference_number, is_payed
 `
 
 type CreateBillingParams struct {
@@ -83,7 +83,7 @@ func (q *Queries) CreateBilling(ctx context.Context, arg CreateBillingParams) (B
 }
 
 const getBillingByNumber = `-- name: GetBillingByNumber :one
-SELECT id, bill_number, name, base_amount, fine_amount, total_amount, "createdAt", pay_timestampt, refference_number, "isPayed" FROM billings
+SELECT id, bill_number, name, base_amount, fine_amount, total_amount, created_at, pay_timestampt, refference_number, is_payed FROM billings
 WHERE bill_number = $1 LIMIT 1
 `
 
@@ -108,13 +108,13 @@ func (q *Queries) GetBillingByNumber(ctx context.Context, billNumber string) (Bi
 const payBill = `-- name: PayBill :one
 UPDATE billings
 SET
-    isPayed = true,
+    is_payed = true,
     pay_timestampt = now(),
     refference_number = $1
 WHERE
     bill_number = $2
 AND total_amount = $3
-RETURNING id, bill_number, name, base_amount, fine_amount, total_amount, "createdAt", pay_timestampt, refference_number, "isPayed"
+RETURNING id, bill_number, name, base_amount, fine_amount, total_amount, created_at, pay_timestampt, refference_number, is_payed
 `
 
 type PayBillParams struct {

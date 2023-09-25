@@ -5,8 +5,8 @@ CREATE TABLE "billings" (
     "base_amount" bigint NOT NULL DEFAULT 1000,
     "fine_amount" bigint NOT NULL DEFAULT 1000,
     "total_amount" bigint NOT NULL DEFAULT 1000,
-    "createdAt" timestamptz NOT NULL DEFAULT 'now()',
+    "created_at" timestamptz NOT NULL DEFAULT 'now()',
     "pay_timestampt" timestamptz,
     "refference_number" varchar NOT NULL DEFAULT '',
-    "isPayed" bool NOT NULL DEFAULT false
+    "is_payed" bool NOT NULL DEFAULT false
 );
