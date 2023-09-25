@@ -1,5 +1,5 @@
 CREATE TABLE "billings" (
-    "id" uuid PRIMARY KEY,
+    "id" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
     "bill_number" varchar UNIQUE NOT NULL,
     "name" varchar NOT NULL,
     "base_amount" bigint NOT NULL DEFAULT 1000,
@@ -8,5 +8,5 @@ CREATE TABLE "billings" (
     "createdAt" timestamptz NOT NULL DEFAULT 'now()',
     "pay_timestampt" timestamptz,
     "refference_number" varchar NOT NULL DEFAULT '',
-    "isPayed" bool
+    "isPayed" bool NOT NULL DEFAULT false
 );

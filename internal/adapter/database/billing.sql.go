@@ -44,9 +44,9 @@ func (q *Queries) CheckBill(ctx context.Context, arg CheckBillParams) (Billing, 
 
 const createBilling = `-- name: CreateBilling :one
 INSERT INTO billings 
-    (name, bill_number, base_amount, fine_amount, total_amount, createdAt)
+    (name, bill_number, base_amount, fine_amount, total_amount)
 VALUES (
-    $1,$2,$3,$4,$5,now()
+    $1,$2,$3,$4,$5
 ) RETURNING id, bill_number, name, base_amount, fine_amount, total_amount, "createdAt", pay_timestampt, refference_number, "isPayed"
 `
 
