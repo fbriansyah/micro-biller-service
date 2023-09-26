@@ -9,7 +9,10 @@ import (
 	"github.com/fbriansyah/micro-biller-service/internal/port"
 )
 
-var ErrorBillAlreadyPaid = errors.New("bill already paid")
+var (
+	ErrorBillAlreadyPaid = errors.New("bill already paid")
+	ErrorInvalidAmount   = errors.New("invalid amount")
+)
 
 type BillerService struct {
 	db port.DatabasePort
@@ -43,9 +46,13 @@ func (s *BillerService) Inquiry(billNumber string) (dbill.Bill, error) {
 }
 
 func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
-	_, err := s.Inquiry(updateBill.BillNumber)
+	bill, err := s.Inquiry(updateBill.BillNumber)
 	if err != nil {
 		return dbill.Transaction{}, err
+	}
+
+	if bill.TotalAmount != updateBill.TotalAmount {
+		return dbill.Transaction{}, ErrorInvalidAmount
 	}
 
 	arg := db.PayBillParams{
