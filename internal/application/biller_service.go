@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 
+	db "github.com/fbriansyah/micro-biller-service/internal/adapter/database"
 	dbill "github.com/fbriansyah/micro-biller-service/internal/application/domain/biller"
 	"github.com/fbriansyah/micro-biller-service/internal/port"
 )
 
-var (
-	ErrorBillAlreadyPaid = errors.New("bill already paid")
-)
+var ErrorBillAlreadyPaid = errors.New("bill already paid")
 
 type BillerService struct {
 	db port.DatabasePort
@@ -40,5 +39,29 @@ func (s *BillerService) Inquiry(billNumber string) (dbill.Bill, error) {
 		BaseAmount:  bill.BaseAmount,
 		FineAmount:  bill.FineAmount,
 		TotalAmount: bill.TotalAmount,
+	}, nil
+}
+
+func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
+	_, err := s.Inquiry(updateBill.BillNumber)
+	if err != nil {
+		return dbill.Transaction{}, err
+	}
+
+	arg := db.PayBillParams{
+		RefferenceNumber: refferenceNumber,
+		TotalAmount:      updateBill.TotalAmount,
+		BillNumber:       updateBill.BillNumber,
+	}
+
+	paidBill, err := s.db.PayBill(context.Background(), arg)
+	if err != nil {
+		return dbill.Transaction{}, err
+	}
+
+	return dbill.Transaction{
+		RefferenceNumber: paidBill.RefferenceNumber,
+		Billing:          updateBill,
+		CreatedAt:        paidBill.PayTimestampt.Time,
 	}, nil
 }
