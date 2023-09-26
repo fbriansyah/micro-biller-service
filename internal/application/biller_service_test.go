@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomBill(t *testing.T) db.Billing {
+func createRandomBillInMemory(t *testing.T) db.Billing {
 	arg := db.CreateBillingParams{
 		Name:       util.RandomString(8),
 		BillNumber: util.RandomBillNumber(),
@@ -25,9 +25,24 @@ func createRandomBill(t *testing.T) db.Billing {
 	return bill
 }
 
+func createRandomBill(t *testing.T) db.Billing {
+	arg := db.CreateBillingParams{
+		Name:       util.RandomString(8),
+		BillNumber: util.RandomBillNumber(),
+		BaseAmount: util.RandomMoney(),
+		FineAmount: util.RandomInt(100, 999),
+	}
+
+	bill, err := testDBAdapter.CreateBilling(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, bill)
+
+	return bill
+}
+
 func TestInquiryInMemory(t *testing.T) {
 
-	bill1 := createRandomBill(t)
+	bill1 := createRandomBillInMemory(t)
 	require.NotEmpty(t, bill1)
 
 	bill2, err := testServiceWithMemoryDB.Inquiry(bill1.BillNumber)
@@ -41,8 +56,24 @@ func TestInquiryInMemory(t *testing.T) {
 	require.Equal(t, bill1.TotalAmount, bill2.TotalAmount)
 }
 
-func TestInquiryAlreadyPaidInMemory(t *testing.T) {
+func TestInquiry(t *testing.T) {
+
 	bill1 := createRandomBill(t)
+	require.NotEmpty(t, bill1)
+
+	bill2, err := testServiceWithPostgresDB.Inquiry(bill1.BillNumber)
+	require.NoError(t, err)
+	require.NotEmpty(t, bill2)
+
+	require.Equal(t, bill1.Name, bill2.Name)
+	require.Equal(t, bill1.BillNumber, bill2.BillNumber)
+	require.Equal(t, bill1.BaseAmount, bill2.BaseAmount)
+	require.Equal(t, bill1.FineAmount, bill2.FineAmount)
+	require.Equal(t, bill1.TotalAmount, bill2.TotalAmount)
+}
+
+func TestInquiryAlreadyPaidInMemory(t *testing.T) {
+	bill1 := createRandomBillInMemory(t)
 	require.NotEmpty(t, bill1)
 
 	reffnum := uuid.New().String()
@@ -54,5 +85,21 @@ func TestInquiryAlreadyPaidInMemory(t *testing.T) {
 	})
 
 	_, err := testServiceWithMemoryDB.Inquiry(bill1.BillNumber)
+	require.Error(t, err, ErrorBillAlreadyPaid)
+}
+
+func TestInquiryAlreadyPaidIn(t *testing.T) {
+	bill1 := createRandomBill(t)
+	require.NotEmpty(t, bill1)
+
+	reffnum := uuid.New().String()
+
+	testDBAdapter.PayBill(context.Background(), db.PayBillParams{
+		RefferenceNumber: reffnum,
+		BillNumber:       bill1.BillNumber,
+		TotalAmount:      bill1.TotalAmount,
+	})
+
+	_, err := testServiceWithPostgresDB.Inquiry(bill1.BillNumber)
 	require.Error(t, err, ErrorBillAlreadyPaid)
 }
