@@ -8,14 +8,15 @@ import (
 	"github.com/fbriansyah/micro-biller-service/internal/port"
 )
 
-var testService *BillerService
-var testDatabaseAdapter port.DatabasePort
+var (
+	testServiceWithMemoryDB *BillerService
+	testDBMemoryAdapter     port.DatabasePort
+)
 
 func TestMain(m *testing.M) {
+	testDBMemoryAdapter = memorydb.NewMemoryDatabase()
 
-	testDatabaseAdapter = memorydb.NewMemoryDatabase()
-
-	testService = NewBillerService(testDatabaseAdapter)
+	testServiceWithMemoryDB = NewBillerService(testDBMemoryAdapter)
 
 	os.Exit(m.Run())
 }
