@@ -9,7 +9,10 @@ import (
 
 type ChiAdapter struct {
 	billerService port.BillerServicePort
-	serverAddress string
+}
+
+type ChiAdapterConfig struct {
+	ServerAddress string
 }
 
 func NewChiAdapter(billerService port.BillerServicePort) *ChiAdapter {
@@ -19,9 +22,9 @@ func NewChiAdapter(billerService port.BillerServicePort) *ChiAdapter {
 	}
 }
 
-func (adapter *ChiAdapter) Run() {
+func (adapter *ChiAdapter) Run(config ChiAdapterConfig) {
 	srv := &http.Server{
-		Addr:    adapter.serverAddress,
+		Addr:    config.ServerAddress,
 		Handler: adapter.routes(),
 	}
 	err := srv.ListenAndServe()

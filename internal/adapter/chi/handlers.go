@@ -3,6 +3,8 @@ package chi
 import (
 	"errors"
 	"net/http"
+
+	"github.com/fbriansyah/micro-biller-service/internal/application"
 )
 
 func (adapter *ChiAdapter) Inquiry(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +20,18 @@ func (adapter *ChiAdapter) Inquiry(w http.ResponseWriter, r *http.Request) {
 
 	bill, err := adapter.billerService.Inquiry(requestPayload.BillNumber)
 	if err != nil {
-		adapter.errorJSON(w, err, http.StatusNotFound)
+		if err.Error() == "sql: no rows in result set" {
+			adapter.errorJSON(w, errors.New("cannot find bill number"), http.StatusNotFound)
+			return
+		}
+
+		if err == application.ErrorBillAlreadyPaid {
+			adapter.errorJSON(w, err, http.StatusNotFound)
+			return
+		}
+
+		adapter.errorJSON(w, err, http.StatusInternalServerError)
+
 		return
 	}
 
