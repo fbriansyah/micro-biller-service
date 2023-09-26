@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/fbriansyah/micro-biller-service/util"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,7 +58,7 @@ func TestGetBillingByNumber(t *testing.T) {
 func TestPayBill(t *testing.T) {
 	bill1 := CreateRandomBilling(t)
 
-	reffnum := uuid.New().String()
+	reffnum := util.RandomRefferenceNumber()
 
 	arg := PayBillParams{
 		RefferenceNumber: reffnum,
@@ -79,7 +78,7 @@ func TestPayBill(t *testing.T) {
 func TestCheckBill(t *testing.T) {
 	bill1 := CreateRandomBilling(t)
 
-	reffnum := uuid.New().String()
+	reffnum := util.RandomRefferenceNumber()
 
 	arg := PayBillParams{
 		RefferenceNumber: reffnum,

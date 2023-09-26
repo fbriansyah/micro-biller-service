@@ -76,7 +76,7 @@ func TestInquiryAlreadyPaidInMemory(t *testing.T) {
 	bill1 := createRandomBillInMemory(t)
 	require.NotEmpty(t, bill1)
 
-	reffnum := uuid.New().String()
+	reffnum := util.RandomRefferenceNumber()
 
 	testDBMemoryAdapter.PayBill(context.Background(), db.PayBillParams{
 		RefferenceNumber: reffnum,
