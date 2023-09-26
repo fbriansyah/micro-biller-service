@@ -1,10 +1,14 @@
 package util
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -37,11 +41,6 @@ func RandomMoney() int64 {
 	return RandomInt(1000, 100000)
 }
 
-// RandomEmail generates a random email
-func RandomEmail() string {
-	return fmt.Sprintf("%s@email.com", RandomString(6))
-}
-
 func RandomBillNumber() string {
 	return fmt.Sprintf(
 		"63%d%d%d%d",
@@ -50,4 +49,15 @@ func RandomBillNumber() string {
 		RandomInt(1000, 9999),
 		RandomInt(1000, 9999),
 	)
+}
+
+func RandomRefferenceNumber() string {
+	reff := uuid.New().String()
+
+	hasher := sha1.New()
+	hasher.Write([]byte(reff))
+
+	sha := hex.EncodeToString(hasher.Sum(nil))
+
+	return strings.ToUpper(sha)
 }

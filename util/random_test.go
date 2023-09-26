@@ -32,3 +32,9 @@ func TestRandomBillNumber(t *testing.T) {
 	require.Equal(t, billNumb[:2], "63")
 	require.Equal(t, len(billNumb), 18)
 }
+
+func TestRandomRefferenceNumber(t *testing.T) {
+	reff := RandomRefferenceNumber()
+
+	require.Equal(t, len(reff), 40)
+}
