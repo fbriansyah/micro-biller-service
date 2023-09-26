@@ -140,3 +140,22 @@ func TestPaymentInvalidAmountInMemory(t *testing.T) {
 	require.Error(t, err, ErrorInvalidAmount)
 	require.Empty(t, transaction)
 }
+
+func TestAdviceInMemory(t *testing.T) {
+	bill1 := createRandomBillInMemory(t)
+	require.NotEmpty(t, bill1)
+
+	reff := util.RandomRefferenceNumber()
+	searchedBill := dmbill.Bill{
+		BillNumber:  bill1.BillNumber,
+		TotalAmount: bill1.TotalAmount,
+	}
+	testServiceWithMemoryDB.Payment(searchedBill, reff)
+
+	transaction, err := testServiceWithMemoryDB.Advice(searchedBill, reff)
+	require.NoError(t, err)
+	require.NotEmpty(t, transaction)
+
+	require.Equal(t, reff, transaction.RefferenceNumber)
+	require.Equal(t, bill1.TotalAmount, transaction.Billing.TotalAmount)
+}
