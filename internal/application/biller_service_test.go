@@ -3,8 +3,10 @@ package application
 import (
 	"context"
 	"testing"
+	"time"
 
 	db "github.com/fbriansyah/micro-biller-service/internal/adapter/database"
+	dmbill "github.com/fbriansyah/micro-biller-service/internal/application/domain/biller"
 	"github.com/fbriansyah/micro-biller-service/util"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -88,7 +90,7 @@ func TestInquiryAlreadyPaidInMemory(t *testing.T) {
 	require.Error(t, err, ErrorBillAlreadyPaid)
 }
 
-func TestInquiryAlreadyPaidIn(t *testing.T) {
+func TestInquiryAlreadyPaid(t *testing.T) {
 	bill1 := createRandomBill(t)
 	require.NotEmpty(t, bill1)
 
@@ -102,4 +104,39 @@ func TestInquiryAlreadyPaidIn(t *testing.T) {
 
 	_, err := testServiceWithPostgresDB.Inquiry(bill1.BillNumber)
 	require.Error(t, err, ErrorBillAlreadyPaid)
+}
+
+func TestPaymentInMemory(t *testing.T) {
+	bill1 := createRandomBillInMemory(t)
+	require.NotEmpty(t, bill1)
+
+	reff := util.RandomRefferenceNumber()
+
+	arg := dmbill.Bill{
+		BillNumber:  bill1.BillNumber,
+		TotalAmount: bill1.TotalAmount,
+	}
+
+	transaction, err := testServiceWithMemoryDB.Payment(arg, reff)
+	require.NoError(t, err)
+	require.NotEmpty(t, transaction)
+
+	require.Equal(t, reff, transaction.RefferenceNumber)
+	require.WithinDuration(t, time.Now(), transaction.CreatedAt, 24*time.Hour)
+}
+
+func TestPaymentInvalidAmountInMemory(t *testing.T) {
+	bill1 := createRandomBillInMemory(t)
+	require.NotEmpty(t, bill1)
+
+	reff := util.RandomRefferenceNumber()
+
+	arg := dmbill.Bill{
+		BillNumber:  bill1.BillNumber,
+		TotalAmount: bill1.TotalAmount + 2000,
+	}
+
+	transaction, err := testServiceWithMemoryDB.Payment(arg, reff)
+	require.Error(t, err, ErrorInvalidAmount)
+	require.Empty(t, transaction)
 }
