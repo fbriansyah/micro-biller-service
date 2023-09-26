@@ -75,11 +75,11 @@ func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) 
 }
 
 // Advice check isPay field from bill record
-func (s *BillerService) Advice(updateBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
+func (s *BillerService) Advice(searchBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
 	arg := db.CheckBillParams{
-		BillNumber:       updateBill.BillNumber,
+		BillNumber:       searchBill.BillNumber,
 		RefferenceNumber: refferenceNumber,
-		TotalAmount:      updateBill.TotalAmount,
+		TotalAmount:      searchBill.TotalAmount,
 	}
 
 	bill, err := s.db.CheckBill(context.Background(), arg)
