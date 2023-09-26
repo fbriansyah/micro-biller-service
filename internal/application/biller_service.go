@@ -45,6 +45,7 @@ func (s *BillerService) Inquiry(billNumber string) (dbill.Bill, error) {
 	}, nil
 }
 
+// Payment update billing isPay to true and set reffnum and transaction date to record
 func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
 	bill, err := s.Inquiry(updateBill.BillNumber)
 	if err != nil {
@@ -70,5 +71,31 @@ func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) 
 		RefferenceNumber: paidBill.RefferenceNumber,
 		Billing:          updateBill,
 		CreatedAt:        paidBill.PayTimestampt.Time,
+	}, nil
+}
+
+// Advice check isPay field from bill record
+func (s *BillerService) Advice(updateBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
+	arg := db.CheckBillParams{
+		BillNumber:       updateBill.BillNumber,
+		RefferenceNumber: refferenceNumber,
+		TotalAmount:      updateBill.TotalAmount,
+	}
+
+	bill, err := s.db.CheckBill(context.Background(), arg)
+	if err != nil {
+		return dbill.Transaction{}, err
+	}
+
+	return dbill.Transaction{
+		RefferenceNumber: bill.RefferenceNumber,
+		CreatedAt:        bill.PayTimestampt.Time,
+		Billing: dbill.Bill{
+			Name:        bill.Name,
+			BillNumber:  bill.BillNumber,
+			BaseAmount:  bill.BaseAmount,
+			FineAmount:  bill.FineAmount,
+			TotalAmount: bill.TotalAmount,
+		},
 	}, nil
 }
