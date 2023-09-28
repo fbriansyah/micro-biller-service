@@ -1,0 +1,17 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=db_biller
+  billerms:
+    image: efner/biller-microservice:1.0
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/db_biller?sslmode=disable
+    depends_on:
+      - postgres
+    entrypoint: "/app/biller-microservice"
