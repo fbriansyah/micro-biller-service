@@ -69,8 +69,14 @@ func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) 
 
 	return dbill.Transaction{
 		RefferenceNumber: paidBill.RefferenceNumber,
-		Billing:          updateBill,
-		CreatedAt:        paidBill.PayTimestampt.Time,
+		Billing: dbill.Bill{
+			BillNumber:  paidBill.BillNumber,
+			Name:        paidBill.BillNumber,
+			BaseAmount:  paidBill.BaseAmount,
+			FineAmount:  paidBill.FineAmount,
+			TotalAmount: paidBill.TotalAmount,
+		},
+		CreatedAt: paidBill.PayTimestampt.Time,
 	}, nil
 }
 
