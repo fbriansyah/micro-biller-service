@@ -13,6 +13,7 @@ var (
 	ErrorBillAlreadyPaid = errors.New("bill already paid")
 	ErrorBillNotFound    = errors.New("bill not found")
 	ErrorInvalidAmount   = errors.New("invalid amount")
+	ErrorPayment         = errors.New("cannot pay bill")
 )
 
 type BillerService struct {
@@ -50,7 +51,7 @@ func (s *BillerService) Inquiry(billNumber string) (dbill.Bill, error) {
 func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) (dbill.Transaction, error) {
 	bill, err := s.Inquiry(updateBill.BillNumber)
 	if err != nil {
-		return dbill.Transaction{}, err
+		return dbill.Transaction{}, ErrorBillNotFound
 	}
 
 	if bill.TotalAmount != updateBill.TotalAmount {
@@ -65,7 +66,7 @@ func (s *BillerService) Payment(updateBill dbill.Bill, refferenceNumber string) 
 
 	paidBill, err := s.db.PayBill(context.Background(), arg)
 	if err != nil {
-		return dbill.Transaction{}, err
+		return dbill.Transaction{}, ErrorPayment
 	}
 
 	return dbill.Transaction{
