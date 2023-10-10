@@ -11,6 +11,7 @@ import (
 
 var (
 	ErrorBillAlreadyPaid = errors.New("bill already paid")
+	ErrorBillNotFound    = errors.New("bill not found")
 	ErrorInvalidAmount   = errors.New("invalid amount")
 )
 
@@ -29,7 +30,7 @@ func NewBillerService(dbport port.DatabasePort) *BillerService {
 func (s *BillerService) Inquiry(billNumber string) (dbill.Bill, error) {
 	bill, err := s.db.GetBillingByNumber(context.Background(), billNumber)
 	if err != nil {
-		return dbill.Bill{}, err
+		return dbill.Bill{}, ErrorBillNotFound
 	}
 
 	if bill.IsPayed {
